@@ -30,15 +30,6 @@ const ksm: AssetInChain = {
   teleport: {
     ksm: (...args) =>
       api.tx.PolkadotXcm.transfer_assets(fromAssetHubToRelay(...args)),
-    ksmEnc: (from, amount, to) =>
-      api.tx.PolkadotXcm.limited_teleport_assets(
-        fromSystemToSibling(
-          1001,
-          getNativeAsset(1, amount),
-          from,
-          to,
-        ),
-      ),
     dotAh: (from, amount, to) =>
       api.tx.PolkadotXcm.transfer_assets(
         fromAssetHubToForeign(

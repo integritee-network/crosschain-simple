@@ -25,7 +25,6 @@ import React, {
 } from "react"
 import { FormattedToken } from "./FormattedToken"
 import { cn, formatCurrency } from "@/lib/utils"
-import { Label } from "@/components/ui/label.tsx"
 
 const itkApi = itkClient.getTypedApi(itk)
 const itpApi = itpClient.getTypedApi(itp)
@@ -294,7 +293,7 @@ const SubmitDialog: React.FC<
         <DialogDescription>{dialogText}</DialogDescription>
       </DialogContent>
     </Dialog>
-    
+
     {/* TEER bridge queue displayed below the dialog */}
     <div className="mt-6 text-left rounded-lg border border-border p-4 bg-card">
       <h3 className="text-lg font-bold mb-3">TEER Bridge Queue</h3>
@@ -307,7 +306,7 @@ const SubmitDialog: React.FC<
               <div className="mb-2">
                 {/* Status indicators moved down */}
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2 text-sm">
 
               <div className="text-muted-foreground">Address:</div>
@@ -315,11 +314,11 @@ const SubmitDialog: React.FC<
 
                 <div className="text-muted-foreground">Amount:</div>
                 <div>{formatAmount(item.amount)}</div>
-                
+
                 <div className="text-muted-foreground">Nonce:</div>
                 <div>{item.source_nonce}</div>
               </div>
-              
+
               <div className="mt-2 text-xs">
                 {!item.hasArrivedOnDestination && (
                   <div className="flex items-center justify-between">

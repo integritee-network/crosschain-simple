@@ -11,6 +11,7 @@ import {
 } from "@polkadot-api/descriptors"
 import { Binary, Enum, SS58String } from "polkadot-api"
 import { combineLatest, from, map } from "rxjs"
+import type { Observable } from "rxjs";
 
 const encodeAccount = AccountId().enc
 
@@ -219,7 +220,7 @@ export const watchForeingAssetAccoutFreeBalance =
   (account: SS58String) =>
     api.query.ForeignAssets.Account.watchValue(asset, account, "best").pipe(
       map((data) =>
-        data?.status && Enum.is(data.status, "Liquid") ? data.balance : 0n,
+        data?.status && Enum.is(data.status, "Liquid") && typeof data?.balance === "bigint" ? data.balance : 0n,
       ),
     )
 

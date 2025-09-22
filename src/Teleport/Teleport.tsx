@@ -1,7 +1,7 @@
-import React, { Reducer, useReducer, useState, useEffect } from "react"
+import React, { Reducer, useReducer, useState } from "react"
 import { useBalance } from "./use-balance"
 import { Label } from "@/components/ui/label"
-import { AssetId, CHAIN_NAMES, ASSET_DECIMALS, ChainId, chains } from "@/api"
+import { AssetId, CHAIN_NAMES, ChainId, chains } from "@/api"
 import {
   SelectTrigger,
   SelectValue,
@@ -102,8 +102,8 @@ export const Teleport: React.FC = () => {
   const heartbeatStale = !!(usePorteer && isPorteerHeartbeatStale(sourcePorteerStatus?.heartbeat));
   const bridgeEnabled = !!(usePorteer && sourcePorteerStatus?.config.send_enabled && destinationPorteerStatus?.config.receive_enabled);
   const accountUnableToExistOnDestination = asset.selected === "TEER"
-    && ((to.selected === "dotAh" && !(dotBalanceOnAh > 0n))
-    || (to.selected === "ksmAh" && !(ksmBalanceOnAh > 0n)));
+    && ((to.selected === "dotAh" && !(dotBalanceOnAh != null && dotBalanceOnAh > 0n))
+    || (to.selected === "ksmAh" && !(ksmBalanceOnAh != null && ksmBalanceOnAh > 0n)));
 
   return (
     <>
