@@ -185,6 +185,13 @@ const SubmitDialog: React.FC<
     return `${address.substring(0, maxLength)}...`;
   };
 
+// Helper function to truncate hash
+const truncateHash = (hash: string, length: number = 6) => {
+  return hash.length > length * 2
+    ? `${hash.substring(0, length)}...${hash.substring(hash.length - length)}`
+    : hash;
+};
+
   // Helper function to format token amounts
   const formatAmount = (amount: any): string => {
     try {
@@ -222,7 +229,7 @@ const SubmitDialog: React.FC<
                     case "txBestBlocksState": {
                       if (e.found) {
                         if (e.ok) {
-                          setDialogText(`The transaction was found in a best block (${e.block.hash}[${e.block.index}]), and it's being successful! 🎉`)
+                          setDialogText(`The transaction was found in a best block (${truncateHash(e.block.hash)}[${e.block.index}]), and it's being successful! 🟢`)
                           console.log("events:", e.events)
                           // TODO this is a hack! we should not instantiate a new api of hardcoded type here, but it should work for both ITK and ITP
                           const filteredEvents = itkApi.event.Porteer.PortedTokens.filter(e.events);
@@ -247,7 +254,7 @@ const SubmitDialog: React.FC<
                             setPorteerQueue(prev => [...prev, newElement])
                           }
                         } else {
-                          setDialogText(`The transaction was found in a best block (${e.block.hash}[${e.block.index}]), but it's failing... 😞`)
+                          setDialogText(`The transaction was found in a best block (${truncateHash(e.block.hash)}[${e.block.index}]), but it's failing... 🔴`)
                         }
                       } else if (e.isValid) {
                         setDialogText("The transaction has been validated and broadcasted")
@@ -258,12 +265,10 @@ const SubmitDialog: React.FC<
                     }
                     case "finalized": {
                     setDialogText(
-                      `The transaction is in a finalized block (${
-                        e.block.hash
-                      }[${e.block.index}]), ${
+                      `The transaction is in a finalized block (${truncateHash(e.block.hash)}[${e.block.index}]), ${
                         e.ok
-                          ? "and it was successful! 🎉"
-                          : "but it failed... 😞"
+                          ? "and it was successful! 🟢"
+                          : "but it failed... 🔴"
                       }`,
                     )
                     setTimeout(() => {
@@ -308,6 +313,9 @@ const SubmitDialog: React.FC<
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-sm">
+
+              <div className="text-muted-foreground">Destination:</div>
+              <div>{CHAIN_NAMES[item.destination] || item.destination}</div>
 
               <div className="text-muted-foreground">Address:</div>
               <div>{truncateAddress(item.who)}</div>
@@ -418,19 +426,28 @@ export const FeesAndSubmit: React.FC<{
           </span>
         </li>
       </ul>
+      <div className="max-w-full">
       <SubmitDialog
         signSubmitAndWatch={signSubmitAndWatch}
         signer={account.polkadotSigner}
         to={to}
         disabled={disabled}
+
       >
+        <div className="flex flex-col">
+        <span>
         Teleporting{" "}
         {formatCurrency(fixedAmount, ASSET_DECIMALS[asset], {
           nDecimals: 4,
           padToDecimals: false,
-        })}
-        {asset} from {CHAIN_NAMES[from]} to {CHAIN_NAMES[to]}
+        })} {" "}
+        {asset}
+        </span>
+        <span>from {CHAIN_NAMES[from]} </span>
+        <span>to {CHAIN_NAMES[to]}</span>
+        </div>
       </SubmitDialog>
+      </div>
     </>
   )
 }
