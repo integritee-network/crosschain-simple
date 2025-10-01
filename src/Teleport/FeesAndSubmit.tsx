@@ -187,8 +187,8 @@ const SubmitDialog: React.FC<
 
 // Helper function to truncate hash
 const truncateHash = (hash: string, length: number = 6) => {
-  return hash.length > length * 2 
-    ? `${hash.substring(0, length)}...${hash.substring(hash.length - length)}` 
+  return hash.length > length * 2
+    ? `${hash.substring(0, length)}...${hash.substring(hash.length - length)}`
     : hash;
 };
 
@@ -265,9 +265,7 @@ const truncateHash = (hash: string, length: number = 6) => {
                     }
                     case "finalized": {
                     setDialogText(
-                      `The transaction is in a finalized block (${
-                        e.block.hash
-                      }[${e.block.index}]), ${
+                      `The transaction is in a finalized block (${truncateHash(e.block.hash)}[${e.block.index}]), ${
                         e.ok
                           ? "and it was successful! 🟢"
                           : "but it failed... 🔴"
@@ -434,7 +432,7 @@ export const FeesAndSubmit: React.FC<{
         signer={account.polkadotSigner}
         to={to}
         disabled={disabled}
-        
+
       >
         <div className="flex flex-col">
         <span>
@@ -443,7 +441,7 @@ export const FeesAndSubmit: React.FC<{
           nDecimals: 4,
           padToDecimals: false,
         })} {" "}
-        {asset} 
+        {asset}
         </span>
         <span>from {CHAIN_NAMES[from]} </span>
         <span>to {CHAIN_NAMES[to]}</span>
