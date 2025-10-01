@@ -219,7 +219,12 @@ export const Teleport: React.FC = () => {
         to={to.selected}
         asset={asset.selected}
         amount={amount}
-        bridgeFee={usePorteer ? sourcePorteerStatus?.fees.local_equivalent_sum : 0n}
+        bridgeFee={
+          usePorteer
+            ? (sourcePorteerStatus?.fees.local_equivalent_sum ?? 0n) +
+              (sourcePorteerStatus?.fees.hop1 ?? 0n)
+            : 0n
+        }
         disabled={
           usePorteer &&
             (!bridgeEnabled || heartbeatStale)
