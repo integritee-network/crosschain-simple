@@ -42,6 +42,14 @@ type PorteerQueueElement = {
   hasArrivedOnOtherSide: boolean
   hasArrivedOnDestination: boolean
 }
+
+function dedupePorteerQueue(queue: PorteerQueueElement[]): PorteerQueueElement[] {
+  return queue.filter(
+    (item, idx, arr) =>
+      arr.findIndex(i => i.source_nonce === item.source_nonce) === idx
+  );
+}
+
 const SubmitDialog: React.FC<
   PropsWithChildren<{
     signer: PolkadotSigner
@@ -83,7 +91,7 @@ const SubmitDialog: React.FC<
             newQueue[index].hasArrivedOnDestination = true;
             newQueue[index].time_arrived_destination = new Date();
           }
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -98,7 +106,7 @@ const SubmitDialog: React.FC<
           const newQueue = [...prev];
           newQueue[index].hasArrivedOnOtherSide = true;
           newQueue[index].time_arrived_other_side = new Date();
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -117,7 +125,7 @@ const SubmitDialog: React.FC<
             newQueue[index].hasArrivedOnDestination = true;
             newQueue[index].time_arrived_destination = new Date();
           }
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -133,7 +141,7 @@ const SubmitDialog: React.FC<
           const newQueue = [...prev];
           newQueue[index].hasArrivedOnOtherSide = true;
           newQueue[index].time_arrived_other_side = new Date();
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -149,7 +157,7 @@ const SubmitDialog: React.FC<
           const newQueue = [...prev];
           newQueue[index].hasArrivedOnDestination = true;
           newQueue[index].time_arrived_destination = new Date();
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -165,7 +173,7 @@ const SubmitDialog: React.FC<
           const newQueue = [...prev];
           newQueue[index].hasArrivedOnDestination = true;
           newQueue[index].time_arrived_destination = new Date();
-          setPorteerQueue(newQueue);
+          setPorteerQueue(dedupePorteerQueue(newQueue));
         }
       })
     );
@@ -332,7 +340,7 @@ const truncateHash = (hash: string, length: number = 6) => {
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground">Submitted {formatTimeAgo(BigInt(item.time_included.getTime()), now)}</div>
                     <div className="flex items-center px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
-                      Pending
+                      Pending <MaybeSubscanLinkForForeignAssetsIssued destination={item.destination} address={item.who} />
                       <span className="ml-1.5 w-3 h-3 border-2 border-yellow-400 border-t-yellow-600 rounded-full animate-spin"></span>
                     </div>
                   </div>
@@ -341,7 +349,7 @@ const truncateHash = (hash: string, length: number = 6) => {
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground">Arrived on other side after {Math.round((item.time_arrived_other_side.getTime() - item.time_included.getTime()) / 1000)} seconds</div>
                     <div className="flex items-center px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                      In Progress
+                      <MaybeSubscanLinkForForeignAssetsIssued destination={item.destination} address={item.who} />
                     </div>
                   </div>
                 )}
@@ -349,7 +357,7 @@ const truncateHash = (hash: string, length: number = 6) => {
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground">Completed after {Math.round((item.time_arrived_destination.getTime() - item.time_included.getTime()) / 1000)} seconds</div>
                     <div className="flex items-center px-2 py-1 rounded bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                      Completed
+                      Completed <MaybeSubscanLinkForForeignAssetsIssued destination={item.destination} address={item.who} />
                     </div>
                   </div>
                 )}
@@ -472,4 +480,22 @@ function formatTimeAgo(epoch: bigint, now: number): string {
   if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
   const days = Math.floor(hours / 24);
   return `${days} day${days !== 1 ? "s" : ""} ago`;
+}
+
+function MaybeSubscanLinkForForeignAssetsIssued({ destination, address }: { destination: string, address: string }) {
+  if (destination === "dotAh" || destination === "ksmAh") {
+    const subscanPrefix = destination === "dotAh" ? "assethub-polkadot" : "assethub-kusama";
+    return (
+      <span className="ml-2">
+      <a
+        href={`https://${subscanPrefix}.subscan.io/account/${address}?tab=asset_change`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline italic"
+      >
+        🔍 Subscan
+      </a></span>
+    );
+  }
+  return <></>;
 }
