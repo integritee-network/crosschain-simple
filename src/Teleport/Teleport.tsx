@@ -14,6 +14,7 @@ import { FormattedToken } from "./FormattedToken"
 import { Input } from "@/components/ui/input"
 import { FeesAndSubmit } from "./FeesAndSubmit"
 import { usePorteerStatus } from "@/Teleport/use-porteer-status.ts"
+import { useWatchdogRecentlyFailed } from "@/Teleport/use-watchdog-metrics.ts"
 
 const Selector: React.FC<{
   value: string
@@ -96,9 +97,11 @@ export const Teleport: React.FC = () => {
     || (from === "itk" && to.selected === "dotAh")
     || (from === "itp" && to.selected === "ksmAh")
   );
+  const thisPorteer = usePorteer ? from : "itk";
   const otherPorteer = usePorteer ? (from === "itk" ? "itp" : "itk") : "itk";
   const sourcePorteerStatus = usePorteerStatus(from, asset.selected);
   const destinationPorteerStatus = usePorteerStatus(otherPorteer, asset.selected);
+  const watchdogRecentlyFailed = useWatchdogRecentlyFailed(thisPorteer);
   const heartbeatStale = !!(usePorteer && isPorteerHeartbeatStale(sourcePorteerStatus?.heartbeat));
   const bridgeEnabled = !!(usePorteer && sourcePorteerStatus?.config.send_enabled && destinationPorteerStatus?.config.receive_enabled);
   const accountUnableToExistOnDestination = asset.selected === "TEER"
@@ -170,7 +173,7 @@ export const Teleport: React.FC = () => {
            // Last heartbeat: { formatTimeAgo(sourcePorteerStatus.heartbeat, now) }
            //</div>
           }
-          {bridgeEnabled && heartbeatStale && (
+          {bridgeEnabled && (heartbeatStale || watchdogRecentlyFailed) && (
             <div className="warning-box" role="alert">
               ⚠️ Bridge is paused for the selected direction.
             </div>
@@ -180,7 +183,7 @@ export const Teleport: React.FC = () => {
               ⛔ Bridge is disabled for the selected direction.
             </div>
           )}
-          {bridgeEnabled && !heartbeatStale && (
+          {bridgeEnabled && !(heartbeatStale || watchdogRecentlyFailed) && (
             <div className="good-box" role="alert">
               ️✅ Bridge is operational.
             </div>
@@ -227,7 +230,7 @@ export const Teleport: React.FC = () => {
         }
         disabled={
           usePorteer &&
-            (!bridgeEnabled || heartbeatStale)
+            (!bridgeEnabled || heartbeatStale || watchdogRecentlyFailed)
           || accountUnableToExistOnDestination
         }
       />
