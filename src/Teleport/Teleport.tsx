@@ -35,7 +35,10 @@ const Selector: React.FC<{
   </Select>
 )
 
-const fromChains = [...chains.keys()]
+const fromChains = [...chains.keys()].filter(
+  (chain) => chain === "itp" || chain === "itk" || chain === "dotAh"
+);
+
 const chainToSelectorValue = (chain: ChainId) => ({
   key: chain,
   display: CHAIN_NAMES[chain],
@@ -127,7 +130,7 @@ export const Teleport: React.FC = () => {
           onChange={(value) =>
             dispatch({ type: "to", value: value as ChainId })
           }
-          values={to.options.map(chainToSelectorValue)}
+          values={to.options.filter((chain) => chain === "itk" || chain === "itp" || chain === "dotAh").map(chainToSelectorValue)}
         />
       </div>
       <div className="flex flex-col space-y-1.5">
