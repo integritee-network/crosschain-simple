@@ -22,6 +22,9 @@ export default function App() {
             </ExtensionProvider>
           </CardContent>
         </Card>
+        <div className="text-center text-gray-700 mt-4">
+          built with <a href={"https://papi.how"}>PAPI</a>
+        </div>
       </div>
     </AppWrapper>
   )
