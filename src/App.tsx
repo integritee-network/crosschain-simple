@@ -14,16 +14,6 @@ export default function App() {
               TEER CrossChain Tool
             </CardTitle>
           </CardHeader>
-          <Card className="w-full max-w-sm mx-auto mb-6 bg-red-500/80 border-red-700 text-white">
-            <CardHeader>
-              <CardTitle className="text-lg text-center font-bold">
-                ⚠️ Use at your own risk
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              This tool is not yet meant for public use.
-            </CardContent>
-          </Card>
           <CardContent className="grid gap-4">
             <ExtensionProvider>
               <AccountProvider>
